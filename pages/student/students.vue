@@ -158,7 +158,7 @@ export default {
   },
   methods: {
     studentsPage(id) {
-      this.$router.push({name: 'studentList', params: {batch_id: id}})
+      this.$router.push({name: 'student-studentList', params: {batch_id: id}})
       console.log("batch id    " + id)
     },
     async fetchAllBatch($name) {

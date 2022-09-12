@@ -2,7 +2,7 @@
   <v-data-table
     :loading="loadingTable"
     :headers="headers"
-    :items="courses"
+    :items="students"
     :search="search"
     sort-by="id"
     class="elevation-1"
@@ -31,7 +31,7 @@
           class="mb-2"
           v-on:click="createItem()"
         >
-          New Course
+          New Student
         </v-btn>
         <v-dialog
           v-model="dialog"
@@ -59,7 +59,27 @@
                   <v-col
                     cols="12"
                     sm="6"
-                    md="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.name"
+                      label="Name"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.pub_id"
+                      label="Id"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
                   >
                     <v-text-field
                       v-model="editedItem.semester"
@@ -69,11 +89,11 @@
                   <v-col
                     cols="12"
                     sm="6"
-                    md="6"
+                    md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.course_code"
-                      label="Course code"
+                      v-model="editedItem.contact_number"
+                      label="Contact Number"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -82,11 +102,10 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.course_title"
-                      label="Course title"
+                      v-model="editedItem.parents_number"
+                      label="Parents Number"
                     ></v-text-field>
                   </v-col>
-
                 </v-row>
               </v-container>
             </v-card-text>
@@ -153,7 +172,7 @@
 
 <script>
 export default {
-  name: "teachersList",
+  name: "studentList",
   data: () => ({
     loading: false,
     loadingTable: false,
@@ -163,28 +182,33 @@ export default {
     dialogDelete: false,
     headers: [
       {
-        text: 'Semester',
+        text: 'ID',
         align: 'start',
         sortable: false,
-        value: 'semester',
+        value: 'pub_id',
       },
-      {text: 'Course code', value: 'course_code'},
-      {text: 'Course title', value: 'course_title'},
+      {text: 'Name', value: 'name'},
+      {text: 'Contact Number', value: 'contact_number'},
+      {text: 'Parents Number', value: 'parents_number'},
       {text: 'Actions', value: 'actions', sortable: false},
     ],
-    courses: [],
+    students: [],
     editedIndex: -1,
     editedItem: {
-      department_id: '',
+      id:'',
+      batch_id: '',
+      name: '',
+      pub_id: '',
       semester: '',
-      course_code: '',
-      course_title: ''
+      contact_number: '',
+      parents_number: '',
     },
     defaultItem: {
-      department_id: '',
-      semester: '',
-      course_code: '',
-      course_title: ''
+      name: '',
+      calories: 0,
+      fat: 0,
+      carbs: 0,
+      protein: 0,
     },
   }),
 
@@ -205,17 +229,20 @@ export default {
 
   created() {
     this.fetchStudentData()
-    this.editedItem.department_id = this.$route.params.department_id
+    this.editedItem.batch_id = this.$route.params.batch_id
   },
 
   methods: {
     async fetchStudentData() {
       this.loadingTable = true
-      this.courses = await this.$axios.$get('api/course/all/'+this.$route.params.department_id)
+      let data = await this.$axios.$post('api/student/all', {
+        batch_id: this.$route.params.batch_id
+      })
+      this.students = data.student
       this.loadingTable = false
     },
     editItem(item) {
-      this.editedIndex = this.courses.indexOf(item)
+      this.editedIndex = this.students.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
       this.create = false
@@ -227,13 +254,13 @@ export default {
     },
 
     deleteItem(item) {
-      this.editedIndex = this.courses.indexOf(item)
+      this.editedIndex = this.students.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
 
     deleteItemConfirm() {
-      this.courses.splice(this.editedIndex, 1)
+      this.students.splice(this.editedIndex, 1)
       this.closeDelete()
     },
 

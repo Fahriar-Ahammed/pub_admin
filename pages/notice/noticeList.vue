@@ -2,7 +2,7 @@
   <v-data-table
     :loading="loadingTable"
     :headers="headers"
-    :items="students"
+    :items="courses"
     :search="search"
     sort-by="id"
     class="elevation-1"
@@ -11,7 +11,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Students</v-toolbar-title>
+        <v-toolbar-title>Notice</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -31,7 +31,7 @@
           class="mb-2"
           v-on:click="createItem()"
         >
-          New Student
+          New Notice
         </v-btn>
         <v-dialog
           v-model="dialog"
@@ -59,53 +59,24 @@
                   <v-col
                     cols="12"
                     sm="6"
-                    md="4"
+                    md="6"
                   >
                     <v-text-field
-                      v-model="editedItem.name"
-                      label="Name"
+                      v-model="editedItem.title"
+                      label="Title"
                     ></v-text-field>
                   </v-col>
                   <v-col
                     cols="12"
                     sm="6"
-                    md="4"
+                    md="6"
                   >
                     <v-text-field
-                      v-model="editedItem.pub_id"
-                      label="Id"
+                      v-model="editedItem.details"
+                      label="Notice details"
                     ></v-text-field>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.semester"
-                      label="Semester"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.contact_number"
-                      label="Contact Number"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.parents_number"
-                      label="Parents Number"
-                    ></v-text-field>
-                  </v-col>
+
                 </v-row>
               </v-container>
             </v-card-text>
@@ -172,7 +143,7 @@
 
 <script>
 export default {
-  name: "studentList",
+  name: "noticeList",
   data: () => ({
     loading: false,
     loadingTable: false,
@@ -182,33 +153,25 @@ export default {
     dialogDelete: false,
     headers: [
       {
-        text: 'ID',
+        text: 'id',
         align: 'start',
         sortable: false,
-        value: 'pub_id',
+        value: 'id',
       },
-      {text: 'Name', value: 'name'},
-      {text: 'Contact Number', value: 'contact_number'},
-      {text: 'Parents Number', value: 'parents_number'},
+      {text: 'Title', value: 'title'},
+      {text: 'Details', value: 'details'},
+      {text: 'Date', value: 'created_at'},
       {text: 'Actions', value: 'actions', sortable: false},
     ],
-    students: [],
+    courses: [],
     editedIndex: -1,
     editedItem: {
-      id:'',
-      batch_id: '',
-      name: '',
-      pub_id: '',
-      semester: '',
-      contact_number: '',
-      parents_number: '',
+      title: '',
+      details: ''
     },
     defaultItem: {
-      name: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
+      title: '',
+      details: ''
     },
   }),
 
@@ -229,19 +192,16 @@ export default {
 
   created() {
     this.fetchStudentData()
-    this.editedItem.batch_id = this.$route.params.batch_id
   },
 
   methods: {
     async fetchStudentData() {
       this.loadingTable = true
-      this.students = await this.$axios.$post('api/student/all', {
-        batch_id: this.$route.params.batch_id
-      })
+      this.courses = await this.$axios.$get('api/notice/all')
       this.loadingTable = false
     },
     editItem(item) {
-      this.editedIndex = this.students.indexOf(item)
+      this.editedIndex = this.courses.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
       this.create = false
@@ -253,13 +213,13 @@ export default {
     },
 
     deleteItem(item) {
-      this.editedIndex = this.students.indexOf(item)
+      this.editedIndex = this.courses.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
 
     deleteItemConfirm() {
-      this.students.splice(this.editedIndex, 1)
+      this.courses.splice(this.editedIndex, 1)
       this.closeDelete()
     },
 
@@ -283,9 +243,9 @@ export default {
       this.loading = true
       let url;
       if (this.create === true){
-         url = 'api/student/create'
+         url = 'api/notice/create'
       }else{
-         url = 'api/student/update'
+         url = 'api/notice/update'
       }
       await this.$axios.$post(url, this.editedItem)
         .then(function (response) {

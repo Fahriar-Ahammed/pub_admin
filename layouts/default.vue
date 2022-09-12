@@ -105,7 +105,7 @@ export default {
         {
           icon: 'mdi-account-school',
           title: 'Students',
-          to: '/students'
+          to: '/student/students'
         },{
           icon: 'mdi-account-box',
           title: 'Teachers',
@@ -114,6 +114,10 @@ export default {
           icon: 'mdi-book-open-variant',
           title: 'Courses',
           to: '/course/courses'
+        },{
+          icon: 'mdi-book-open-variant',
+          title: 'Notice',
+          to: '/notice/noticeList'
         }
       ],
       miniVariant: false,
